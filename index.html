@@ -107,17 +107,46 @@ a { color: inherit; }
 @media (max-width: 720px) { .tabs a.opt { display: none; } }
 
 /* ---------- hero ---------- */
-.hero .wrap { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; padding-block: 56px 44px; }
-.hero h1 { font-size: var(--step-4); text-transform: uppercase; }
+/* Poster layout: the headline runs the full width, then a ruled row holds the intro on the left and the sticker on the right. */
+.hero .wrap { position: relative; padding-block: 48px 44px; }
+.hero .eyebrow { display: inline-flex; gap: 10px; align-items: center; margin-bottom: 20px; }
+.hero .eyebrow .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--teal); border: 2px solid var(--stroke); flex: none; }
+.hero h1 { font-size: clamp(2.6rem, .6rem + 7.4vw, 5.8rem); line-height: .92; text-transform: uppercase; text-wrap: initial; }
 .hero h1 .sell {
-  display: inline-block; color: var(--orange);
-  -webkit-text-stroke: 3px var(--stroke); paint-order: stroke fill;
-  text-shadow: 6px 6px 0 var(--red);
+  position: relative; display: inline-block; margin-left: .08em; padding: .04em .2em 0;
+  background: var(--red); color: var(--cream);
+  border: 4px solid var(--stroke); border-radius: .14em;
+  box-shadow: .08em .08em 0 var(--orange);
+  transform: rotate(-4deg); transform-origin: 30% 60%;
+  animation: stamp .6s .25s cubic-bezier(.3, 1.6, .5, 1) backwards;
+  transition: transform .25s;
 }
-.hero .eyebrow { display: inline-flex; gap: 10px; align-items: center; margin-bottom: 18px; }
-.hero .eyebrow .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--teal); border: 2px solid var(--stroke); }
-.hero .lede { max-width: 58ch; font-size: var(--step-1); margin-top: 22px; color: var(--fg); }
+.hero h1 .sell:hover { transform: rotate(2deg) scale(1.04); }
+.hero h1 .spark { position: absolute; color: var(--orange); font-size: .32em; line-height: 1; -webkit-text-stroke: 0; }
+.hero h1 .spark.s1 { top: -.55em; right: -.5em; }
+.hero h1 .spark.s2 { bottom: -.35em; left: -.6em; font-size: .22em; color: var(--teal); }
+@keyframes stamp { from { opacity: 0; transform: rotate(-14deg) scale(1.5); } }
+.hero .row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 48px; align-items: start;
+  margin-top: 30px; padding-top: 26px; border-top: 3px solid var(--rule);
+}
+.hero .lede { max-width: 56ch; font-size: var(--step-1); color: var(--fg); }
 .hero .lede strong { font-weight: 800; }
+.hero .ctas { margin-top: 24px; }
+.sticker { width: clamp(170px, 17vw, 220px); aspect-ratio: 1; max-width: 100%; position: relative; margin-top: -120px; transform: rotate(8deg); }
+.sticker svg { width: 100%; height: 100%; display: block; }
+.sticker .ring { transform-origin: 50% 50%; animation: spin 22s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) {
+  .sticker { width: 150px; margin-top: -96px; }
+}
+@media (max-width: 640px) {
+  .hero .wrap { padding-block: 32px 32px; }
+  .hero .eyebrow { padding-right: 104px; }
+  .hero .row { grid-template-columns: 1fr; margin-top: 24px; padding-top: 20px; }
+  .sticker { position: absolute; top: 16px; right: max(16px, env(safe-area-inset-right, 0px)); width: 92px; margin-top: 0; }
+}
+
 .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
@@ -129,16 +158,8 @@ a { color: inherit; }
 .btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--rule); }
 .btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--rule); }
 .btn.primary { background: var(--red); color: var(--on-red); }
-.sticker { width: clamp(180px, 24vw, 290px); aspect-ratio: 1; max-width: 100%; position: relative; }
-.sticker svg { width: 100%; height: 100%; display: block; }
-.sticker .ring { transform-origin: 50% 50%; animation: spin 22s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 .cursor { animation: blink 1.1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-@media (max-width: 760px) {
-  .hero .wrap { grid-template-columns: 1fr; padding-block: 36px 32px; }
-  .sticker { order: -1; width: 150px; justify-self: end; margin-bottom: -40px; }
-}
 
 /* ---------- marquee ---------- */
 .marquee { background: var(--red); color: var(--on-red); border-block: 3px solid var(--rule); overflow: hidden; }
@@ -359,27 +380,29 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
 <main id="top">
   <section class="hero">
     <div class="wrap">
-      <div>
-        <div class="eyebrow label"><span class="dot"></span>Web developer · 7+ years · open for projects</div>
-        <h1>I build websites that <span class="sell">sell.</span></h1>
-        <p class="lede">I'm <strong>Mini Lynn</strong>, a web developer with a degree in Information Technology engineering. I design, build and launch sites, stores, funnels and apps, then bring in the traffic with ads and SEO.</p>
-        <div class="ctas">
-          <a class="btn primary" href="#work">See my work</a>
-          <a class="btn" href="#workshop">Explore the workshop</a>
+      <div class="eyebrow label"><span class="dot"></span>Web developer · 7+ years · open for projects</div>
+      <h1>I build websites<br> that <span class="sell">sell.<span class="spark s1" aria-hidden="true">✦</span><span class="spark s2" aria-hidden="true">✦</span></span></h1>
+      <div class="row">
+        <div>
+          <p class="lede">I'm <strong>Mini Lynn</strong>, a web developer with a degree in Information Technology engineering. I design, build and launch sites, stores, funnels and apps, then bring in the traffic with ads and SEO.</p>
+          <div class="ctas">
+            <a class="btn primary" href="#work">See my work</a>
+            <a class="btn" href="#workshop">Explore the workshop</a>
+          </div>
         </div>
-      </div>
-      <div class="sticker" aria-hidden="true">
-        <svg viewBox="0 0 200 200">
-          <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
-          <circle cx="100" cy="100" r="96" fill="#FFF1D1" stroke="#2B1710" stroke-width="4"/>
-          <circle cx="100" cy="100" r="62" fill="#00B7CD" stroke="#2B1710" stroke-width="4"/>
-          <g class="ring">
-            <text font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2B1710">
-              <textPath href="#circ" textLength="486" lengthAdjust="spacing">MINI LYNN ✦ WEB DEVELOPER ✦ BUILD · LAUNCH · GROW ✦</textPath>
-            </text>
-          </g>
-          <use href="#mark" x="58" y="58" width="84" height="84"/>
-        </svg>
+        <div class="sticker" aria-hidden="true">
+          <svg viewBox="0 0 200 200">
+            <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+            <circle cx="100" cy="100" r="96" fill="#FFF1D1" stroke="#2B1710" stroke-width="4"/>
+            <circle cx="100" cy="100" r="62" fill="#00B7CD" stroke="#2B1710" stroke-width="4"/>
+            <g class="ring">
+              <text font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2B1710">
+                <textPath href="#circ" textLength="486" lengthAdjust="spacing">MINI LYNN ✦ WEB DEVELOPER ✦ BUILD · LAUNCH · GROW ✦</textPath>
+              </text>
+            </g>
+            <use href="#mark" x="58" y="58" width="84" height="84"/>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
